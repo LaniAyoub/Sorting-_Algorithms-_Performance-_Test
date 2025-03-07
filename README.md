@@ -49,7 +49,10 @@ Modifier
 🚀 Python Built-in Sort took 0.001200 seconds.
 Algorithm Performance
 Bubble Sort tends to perform poorly on large datasets due to its time complexity of O(n^2), which makes it inefficient for larger arrays.
+
 Selection Sort also has a time complexity of O(n^2), but it usually performs better than Bubble Sort because it reduces the number of swaps.
+
 Python Built-in Sort (using Timsort) is highly optimized and performs much better than both Bubble and Selection Sort, especially for larger datasets.
+
 Contributing
 If you would like to contribute to this project, feel free to fork the repository, make changes, and submit a pull request.
