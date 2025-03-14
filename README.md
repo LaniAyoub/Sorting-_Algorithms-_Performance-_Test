@@ -56,7 +56,7 @@ Example Output
 ```
 
 Algorithm Performance
-<<<<<<< HEAD
+
 - **Bubble Sort** tends to perform poorly on large datasets due to its time complexity of O(n^2), which makes it inefficient for larger arrays.
 - **Selection Sort** also has a time complexity of O(n^2), but it usually performs better than Bubble Sort because it reduces the number of swaps.
 - **Insertion Sort** is generally faster than both Bubble Sort and Selection Sort for small datasets but still has a worst-case time complexity of O(n^2).
@@ -67,7 +67,6 @@ Bubble Sort tends to perform poorly on large datasets due to its time complexity
 Selection Sort also has a time complexity of O(n^2), but it usually performs better than Bubble Sort because it reduces the number of swaps.
 
 Python Built-in Sort (using Timsort) is highly optimized and performs much better than both Bubble and Selection Sort, especially for larger datasets.
->>>>>>> 3d4aa4eeaa458e774a44be3fba87e11f764a9138
 
 Contributing
 If you would like to contribute to this project, feel free to fork the repository, make changes, and submit a pull request.
