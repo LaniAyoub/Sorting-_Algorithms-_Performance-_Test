@@ -42,7 +42,7 @@ def test_sorting_performance():
     Generates a list of random numbers and tests the execution time of sorting algorithms.
     """
     small_dataset = [random.uniform(1, 100) for _ in range(50)]
-    large_dataset = [random.uniform(1, 100) for _ in range(1000)]
+    large_dataset = [random.uniform(1, 100) for _ in range(10000)]
     
     print("\n🔹 Small Dataset (50 elements):")
     
@@ -74,7 +74,7 @@ def test_sorting_performance():
     end_time = time.time()
     print(f"🚀 Python Built-in Sort took {end_time - start_time:.6f} seconds.")
     
-    print("\n🔹 Large Dataset (1000 elements):")
+    print("\n🔹 Large Dataset (10000 elements):")
     
     # Bubble Sort test
     bubble_test = large_dataset.copy()
