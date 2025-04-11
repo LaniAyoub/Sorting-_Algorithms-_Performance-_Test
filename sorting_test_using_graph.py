@@ -6,7 +6,7 @@ import numpy as np
 
 # Bubble Sort Implementation
 def bubble_sort(arr):
-    arr_copy = arr.copy()  # Create a copy to avoid modifying the original
+    arr_copy = arr.copy()
     swap = True
     while swap:
         swap = False
@@ -18,7 +18,7 @@ def bubble_sort(arr):
 
 # Selection Sort Implementation
 def selection_sort(arr):
-    arr_copy = arr.copy()  # Create a copy to avoid modifying the original
+    arr_copy = arr.copy()
     for step in range(len(arr_copy)):
         min_idx = step
         for i in range(step + 1, len(arr_copy)):
@@ -29,7 +29,7 @@ def selection_sort(arr):
 
 # Insertion Sort Implementation
 def insertion_sort(arr):
-    arr_copy = arr.copy()  # Create a copy to avoid modifying the original
+    arr_copy = arr.copy()
     for i in range(1, len(arr_copy)):
         key = arr_copy[i]
         j = i - 1
@@ -41,9 +41,37 @@ def insertion_sort(arr):
 
 # Python's built-in sort
 def python_sort(arr):
-    arr_copy = arr.copy()  # Create a copy to avoid modifying the original
+    arr_copy = arr.copy()
     arr_copy.sort()
     return arr_copy
+
+# Radix Sort Implementation (for integers)
+def radix_sort(arr):
+    arr_copy = arr.copy()
+    max_val = max(arr_copy)
+    exp = 1
+    while max_val // exp > 0:
+        counting_sort(arr_copy, exp)
+        exp *= 10
+    return arr_copy
+
+def counting_sort(arr, exp):
+    n = len(arr)
+    output = [0] * n
+    count = [0] * 10
+    for i in range(n):
+        index = arr[i] // exp
+        count[index % 10] += 1
+    for i in range(1, 10):
+        count[i] += count[i - 1]
+    i = n - 1
+    while i >= 0:
+        index = arr[i] // exp
+        output[count[index % 10] - 1] = arr[i]
+        count[index % 10] -= 1
+        i -= 1
+    for i in range(n):
+        arr[i] = output[i]
 
 # Function to measure sorting algorithm performance
 def measure_performance(algorithm, data):
@@ -52,36 +80,36 @@ def measure_performance(algorithm, data):
     end_time = time.time()
     return end_time - start_time
 
-# Function to generate random data
-def generate_data(size):
-    return [random.uniform(1, 1000) for _ in range(size)]
+# Function to generate random integer data
+def generate_integer_data(size):
+    return [random.randint(1, 1000) for _ in range(size)]
+
+def generate_three_digit_data(size):
+    return [random.randint(100, 999) for _ in range(size)]
 
 # Main function to run the sorting performance analysis
 def analyze_sorting_performance():
-    # Define available sorting algorithms with assigned colors and improved visualization properties
     sorting_algorithms = {
         "1": {"name": "Bubble Sort", "function": bubble_sort, "color": "#FF5252", "pattern": ''},
         "2": {"name": "Selection Sort", "function": selection_sort, "color": "#4CAF50", "pattern": ''},
         "3": {"name": "Insertion Sort", "function": insertion_sort, "color": "#2196F3", "pattern": ''},
         "4": {"name": "Python Built-in Sort", "function": python_sort, "color": "#FF9800", "pattern": ''},
-        "5": {"name": "All Algorithms", "function": None, "color": None, "pattern": None}
+        "5": {"name": "Radix Sort", "function": radix_sort, "color": "#9C27B0", "pattern": ''},
+        "6": {"name": "All Algorithms", "function": None, "color": None, "pattern": None}
     }
     
-    # Print menu of sorting algorithms
     print("\n📊 Sorting Algorithm Performance Analyzer")
     print("----------------------------------------")
     print("Available sorting algorithms:")
     for key, value in sorting_algorithms.items():
         print(f"{key}. {value['name']}")
     
-    # Get user input for algorithm choice
     while True:
-        algorithm_choice = input("\nSelect an algorithm (1-5): ")
+        algorithm_choice = input("\nSelect an algorithm (1-6): ")
         if algorithm_choice in sorting_algorithms:
             break
         print("Invalid choice. Please try again.")
     
-    # Get user input for array size
     while True:
         try:
             array_size = int(input("\nEnter the size of the array: "))
@@ -90,136 +118,108 @@ def analyze_sorting_performance():
             print("Please enter a positive number.")
         except ValueError:
             print("Invalid input. Please enter a number.")
+
+    data1 = generate_integer_data(array_size)
+    data2 = generate_three_digit_data(array_size)
     
-    # Generate random data
-    data = generate_data(array_size)
-    
-    # Apply custom style for plots
     plt.style.use('seaborn-v0_8-whitegrid')
     
-    # Run performance analysis and plot results
-    if algorithm_choice == "5":  # All algorithms
-        results = {}
+    if algorithm_choice == "6":
+        results1 = {}
+        results2 = {}
         colors = []
         
         for key, algo_info in sorting_algorithms.items():
-            if key != "5":  # Skip "All Algorithms" option
+            if key != "6":
                 algo_name = algo_info["name"]
                 algo_function = algo_info["function"]
                 algo_color = algo_info["color"]
                 
-                time_taken = measure_performance(algo_function, data)
-                results[algo_name] = time_taken
+                time_taken1 = measure_performance(algo_function, data1.copy())
+                time_taken2 = measure_performance(algo_function, data2.copy())
+                results1[algo_name] = time_taken1
+                results2[algo_name] = time_taken2
                 colors.append(algo_color)
                 
-                print(f"✅ {algo_name} took {time_taken:.6f} seconds for {array_size} elements.")
+                print(f"✅ {algo_name} (Random): {time_taken1:.6f}s, (3-digit): {time_taken2:.6f}s for {array_size} elements.")
         
-        # Plot comparison of all algorithms with improved visualization
         plt.figure(figsize=(12, 8))
         
-        # Create gradient effect for bars
-        bars = plt.bar(results.keys(), results.values(), color=colors, alpha=0.8, 
-                      edgecolor='black', linewidth=1.2)
+        x = np.arange(len(results1))
+        width = 0.35
         
-        # Add value labels on top of each bar with improved formatting
-        for bar in bars:
+        bars1 = plt.bar(x - width/2, results1.values(), width, label='Random', color=colors, alpha=0.8, edgecolor='black', linewidth=1.2)
+        bars2 = plt.bar(x + width/2, results2.values(), width, label='3-digit', color=[c + '80' for c in colors], alpha=0.8, edgecolor='black', linewidth=1.2)
+        
+        for bar in bars1 + bars2:
             height = bar.get_height()
-            plt.text(bar.get_x() + bar.get_width()/2., height + 0.0001,
-                    f'{height:.6f}s',
-                    ha='center', va='bottom', rotation=0, fontsize=10, 
-                    fontweight='bold', color='#333333')
+            plt.text(bar.get_x() + bar.get_width()/2., height + 0.0001, f'{height:.6f}s', ha='center', va='bottom', rotation=0, fontsize=8, fontweight='bold', color='#333333')
         
-        # Add enhanced axis labels, title and grid
         plt.xlabel("Sorting Algorithm Implementation", fontsize=14, fontweight='bold', labelpad=10)
         plt.ylabel("Execution Time (Seconds)", fontsize=14, fontweight='bold', labelpad=10)
-        plt.title(f"Comparative Performance of Sorting Algorithms\n({array_size:,} elements)", 
-                 fontsize=16, fontweight='bold', pad=20)
+        plt.title(f"Comparative Performance of Sorting Algorithms\n({array_size:,} elements)", fontsize=16, fontweight='bold', pad=20)
         
-        # Improve x-axis formatting to avoid overlap
-        plt.xticks(rotation=30, ha='right', fontsize=12, fontweight='semibold')
+        plt.xticks(x, results1.keys(), rotation=30, ha='right', fontsize=12, fontweight='semibold')
         plt.yticks(fontsize=12)
         
-        # Add grid only on y-axis with improved styling
         plt.grid(True, axis='y', linestyle='--', alpha=0.7)
-        
-        # Add a box around the plot
         plt.box(True)
+        plt.legend()
         
-        # Add a text annotation explaining the test environment
-        plt.figtext(0.5, 0.01, 
-                   f"Test conducted on arrays with {array_size:,} random floating-point numbers between 1 and 1000", 
-                   ha="center", fontsize=10, style='italic')
+        plt.figtext(0.5, 0.01, f"Test conducted on arrays with {array_size:,} random numbers and {array_size:,} 3-digit numbers", ha="center", fontsize=10, style='italic')
         
-        plt.tight_layout(rect=[0, 0.03, 1, 0.95])  # Adjust layout to make room for annotation
+        plt.tight_layout(rect=[0, 0.03, 1, 0.95])
         plt.show()
         
     else:
-        # Run and plot single algorithm with enhanced visualization
         algo_name = sorting_algorithms[algorithm_choice]["name"]
         algo_function = sorting_algorithms[algorithm_choice]["function"]
         algo_color = sorting_algorithms[algorithm_choice]["color"]
         
-        # Run multiple tests with different array sizes for trend analysis
+        times1 = []
+        times2 = []
         sizes = [array_size//4, array_size//2, array_size, array_size*2]
-        times = []
         
         for size in sizes:
-            test_data = generate_data(size)
-            time_taken = measure_performance(algo_function, test_data)
-            times.append(time_taken)
-            print(f"✅ {algo_name} took {time_taken:.6f} seconds for {size:,} elements.")
+            time_taken1 = measure_performance(algo_function, generate_integer_data(size))
+            time_taken2 = measure_performance(algo_function, generate_three_digit_data(size))
+            times1.append(time_taken1)
+            times2.append(time_taken2)
+            print(f"✅ {algo_name} (Random): {time_taken1:.6f}s, (3-digit): {time_taken2:.6f}s for {size:,} elements.")
         
-        # Plot performance trend with enhanced visualization
         plt.figure(figsize=(12, 8))
         
-        # Create gradient color for line
         cmap = cm.get_cmap('viridis')
         colors = [cmap(i) for i in np.linspace(0, 0.8, len(sizes))]
         
-        # Plot line with gradient markers
-        for i in range(len(sizes)-1):
-            plt.plot(sizes[i:i+2], times[i:i+2], color=algo_color, linewidth=3, alpha=0.8)
+        plt.plot(sizes, times1, label='Random', color=algo_color, linewidth=3, alpha=0.8)
+        plt.plot(sizes, times2, label='3-digit', color=algo_color + '80', linewidth=3, alpha=0.8)
         
-        # Add markers with gradient colors
-        for i, (size, time) in enumerate(zip(sizes, times)):
-            plt.scatter(size, time, s=150, color=colors[i], edgecolor='black', linewidth=1.5, zorder=10)
-            
-            # Add data points with improved label formatting
-            plt.annotate(f'{time:.6f}s', 
-                        (size, time),
-                        textcoords="offset points", 
-                        xytext=(0, 10),
-                        ha='center',
-                        fontsize=11,
-                        fontweight='bold',
-                        bbox=dict(boxstyle="round,pad=0.3", fc='white', ec="gray", alpha=0.8))
+        for i, (size, time1, time2) in enumerate(zip(sizes, times1, times2)):
+            plt.scatter(size, time1, s=150, color=colors[i], edgecolor='black', linewidth=1.5, zorder=10)
+            plt.scatter(size, time2, s=150, color=colors[i], edgecolor='black', linewidth=1.5, zorder=10)
+            plt.annotate(f'{time1:.6f}s', (size, time1), textcoords="offset points", xytext=(0, 10), ha='center', fontsize=11, fontweight='bold', bbox=dict(boxstyle="round,pad=0.3", fc='white', ec="gray", alpha=0.8))
+            plt.annotate(f'{time2:.6f}s', (size, time2), textcoords="offset points", xytext=(0, -25), ha='center', fontsize=11, fontweight='bold', bbox=dict(boxstyle="round,pad=0.3", fc='white', ec="gray", alpha=0.8))
         
-        # Format x-axis to use comma as thousand separator
         from matplotlib.ticker import FuncFormatter
         def format_number(x, pos):
             return f'{int(x):,}'
         plt.gca().xaxis.set_major_formatter(FuncFormatter(format_number))
         
-        # Add enhanced axis labels, title and grid
         plt.xlabel("Array Size (Number of Elements)", fontsize=14, fontweight='bold', labelpad=10)
         plt.ylabel("Execution Time (Seconds)", fontsize=14, fontweight='bold', labelpad=10)
         plt.title(f"Performance Scaling of {algo_name}", fontsize=16, fontweight='bold', pad=20)
         
-        # Improve tick label formatting
         plt.xticks(fontsize=12)
         plt.yticks(fontsize=12)
         
-        # Add grid with improved styling
         plt.grid(True, linestyle='--', alpha=0.7)
+        plt.legend()
         
-        # Add annotation explaining the test methodology
-        plt.figtext(0.5, 0.01, 
-                   "Tests conducted with arrays of random floating-point numbers between 1 and 1000",
-                   ha="center", fontsize=10, style='italic')
+        plt.figtext(0.5, 0.01, "Tests conducted with arrays of random numbers and 3-digit numbers", ha="center", fontsize=10, style='italic')
         
-        plt.tight_layout(rect=[0, 0.03, 1, 0.95])  # Adjust layout to make room for annotation
+        plt.tight_layout(rect=[0, 0.03, 1, 0.95])
         plt.show()
 
-# Run the program
 if __name__ == "__main__":
     analyze_sorting_performance()
